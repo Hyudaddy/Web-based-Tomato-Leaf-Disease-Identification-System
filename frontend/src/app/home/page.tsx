@@ -97,11 +97,11 @@ export default function HomePage() {
 
   const greeting = "Welcome to, Tomato Leaf Disease Identification System"
   const descriptions = [
-    'AI-powered tomato leaf disease detection',
+    'Machine Learning powered disease detection',
     'Instant diagnosis in seconds',
-    '95% accuracy detection rate',
-    'For farmers worldwide',
-    'Fito or Phyto a greek word for plant'
+    'High accuracy detection rate',
+    'For Agriculture',
+    'For better farming'
   ]
 
   useEffect(() => {

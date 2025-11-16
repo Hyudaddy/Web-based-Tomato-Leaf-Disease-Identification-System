@@ -1,205 +1,148 @@
-# Quick Start Guide - Fito Admin Dashboard
+# ⚡ Quick Start - Model Retraining
 
-## 🚀 5-Minute Setup
+## 🎯 Your Setup
+- **Option:** C (Balanced)
+- **Device:** Intel Core i3 (CPU)
+- **Time:** 30-60 minutes
+- **Goal:** Better accuracy on low-quality images
 
-### Step 1: Supabase Database Setup (1 minute)
+---
 
-1. **Go to Supabase SQL Editor**: https://supabase.com/dashboard/project/frzxrohhhpvbgwxnisww/sql
+## 🚀 Three Simple Steps
 
-2. **Copy and paste ALL of `supabase_schema.sql`** and click Run
+### Step 1: Check Everything (5 min)
+```bash
+python check_and_prepare.py
+```
+**Expected output:** `✅ ALL CHECKS PASSED! Ready to train!`
 
-   OR manually run this SQL:
+---
 
-```sql
--- Create table
-CREATE TABLE predictions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  storage_path TEXT NOT NULL,
-  image_url TEXT,
-  predicted_label TEXT NOT NULL,
-  confidence FLOAT NOT NULL,
-  final_label TEXT,
-  uploader_id UUID REFERENCES auth.users(id),
-  uploader_name TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
+### Step 2: Analyze Dataset (5 min)
+```bash
+python analyze_dataset.py
+```
+**What to look for:**
+- All 11 classes present
+- Each class has images
+- Balanced distribution
 
--- Create indexes
-CREATE INDEX idx_predictions_predicted_label ON predictions(predicted_label);
-CREATE INDEX idx_predictions_final_label ON predictions(final_label);
-CREATE INDEX idx_predictions_created_at ON predictions(created_at DESC);
+---
 
--- Enable RLS
-ALTER TABLE predictions ENABLE ROW LEVEL SECURITY;
-
--- Policies
-CREATE POLICY "Allow public read" ON predictions FOR SELECT USING (true);
-CREATE POLICY "Allow public insert" ON predictions FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow auth update" ON predictions FOR UPDATE USING (auth.role() = 'authenticated');
-CREATE POLICY "Allow auth delete" ON predictions FOR DELETE USING (auth.role() = 'authenticated');
+### Step 3: Train Model (30-60 min)
+```bash
+python train_model_optimized.py
 ```
 
-3. **Create Storage Bucket**:
-   - Go to Storage → New bucket
-   - Name: `tomato-leaves`
-   - Make it **Public** ✅
-   - Click Create
+**What happens:**
+- Loads full dataset
+- Trains for up to 35 epochs
+- Saves best model automatically
+- Shows progress each epoch
 
-4. **Add Storage Policies** (Optional - run `storage_policies.sql`):
-   - After creating bucket, copy `storage_policies.sql`
-   - Paste into SQL Editor and Run
-   - This sets upload/delete permissions
-   - (If bucket is PUBLIC, read access works automatically)
+**Expected final output:**
+```
+✅ Final Validation Accuracy: 88-92%
+✅ New model saved at: C:\Users\HYUDADDY\Desktop\TLDI_system\backend\trained_model_fito.h5
+```
 
-5. **Create Admin User**:
-   - Go to Authentication → Users → Add user
-   - Email: `admin@fito.com`
-   - Password: `admin123` (or your choice)
-   - After creation, click the user → User Metadata → Edit
-   - Add: `{"role": "admin"}`
-   - Save
+---
 
-### Step 2: Start Backend (1 minute)
+## ✅ After Training
+
+1. **Restart your backend API**
+2. **Test with low-quality images**
+3. **Check if "cannot identify" results decreased**
+
+---
+
+## 📊 What's Different
+
+| Aspect | Before | After |
+|--------|--------|-------|
+| Image Size | 128x128 | 192x192 |
+| Batch Size | 32 | 20 |
+| Epochs | 20 | 35 |
+| Learning Rate | 0.001 | 0.0005 |
+| Augmentation | Basic | Enhanced (brightness, contrast) |
+
+---
+
+## 💡 Key Improvements
+
+✅ Handles low-quality images better  
+✅ Better feature extraction (larger images)  
+✅ More training iterations (35 epochs)  
+✅ Brightness/contrast adjustments for poor lighting  
+✅ Early stopping prevents overfitting  
+
+---
+
+## ⚠️ If Something Goes Wrong
+
+**Slow training?**
+- Normal on CPU - just wait
+- Or reduce BATCH_SIZE to 16 in script
+
+**Out of memory?**
+- Reduce BATCH_SIZE to 16
+- Or reduce IMG_SIZE to 160
+
+**Accuracy didn't improve?**
+- Check dataset balance: `python analyze_dataset.py`
+- Might need more training data
+
+---
+
+## 📁 Files
+
+- `train_model_optimized.py` ← Main script
+- `analyze_dataset.py` ← Check dataset
+- `check_and_prepare.py` ← Pre-flight check
+- `TRAINING_GUIDE.md` ← Detailed guide
+- `training_history.json` ← Results (after training)
+
+---
+
+## 🎓 Understanding Progress
+
+```
+Epoch 1/35
+1000/1000 [==============================] - 120s - loss: 0.8234 - accuracy: 0.7234 - val_loss: 0.6234 - val_accuracy: 0.8123
+```
+
+**Good signs:**
+- ✅ val_accuracy increases each epoch
+- ✅ val_loss decreases
+- ✅ No sudden jumps
+
+**Bad signs:**
+- ❌ val_accuracy stays same
+- ❌ val_loss increases
+- ❌ Training crashes
+
+---
+
+## 🔄 Workflow
+
+```
+Run check_and_prepare.py
+         ↓
+Run analyze_dataset.py
+         ↓
+Run train_model_optimized.py (30-60 min)
+         ↓
+Check training_history.json
+         ↓
+Restart backend API
+         ↓
+Test with low-quality images
+```
+
+---
+
+**Ready? Let's go! 🚀**
 
 ```bash
-cd backend
-python app.py
+python check_and_prepare.py
 ```
-
-Should see:
-```
-🍅 Starting Fito API Server...
-API Documentation: http://localhost:8000/docs
-```
-
-### Step 3: Start Frontend (1 minute)
-
-Open new terminal:
-
-```bash
-cd frontend
-npm run dev
-```
-
-Should see:
-```
-✓ Ready on http://localhost:3000
-```
-
-### Step 4: Test (1 minute)
-
-1. **Upload Image**: http://localhost:3000/fito
-   - Upload any tomato leaf image
-   - Should get prediction
-
-2. **Admin Login**: http://localhost:3000/admin/login
-   - Email: `admin@fito.com`
-   - Password: `admin123`
-
-3. **View Dashboard**: Should see stats
-
-4. **View Dataset**: Click "Dataset" in sidebar
-
-✅ **Done!**
-
----
-
-## 📋 Admin Features
-
-### Dashboard (`/admin`)
-- Total images count
-- Category breakdown
-- Visual statistics
-
-### Dataset (`/admin/dataset`)
-- **Filter** by category
-- **Search** images
-- **Preview** full-size
-- **Relabel** categories
-- **Download** images
-- **Delete** images
-- **Export** CSV/ZIP
-
----
-
-## 🔑 Default Credentials
-
-**Admin Login:**
-- URL: http://localhost:3000/admin/login
-- Email: `admin@fito.com`
-- Password: `admin123` (or what you set)
-
----
-
-## 🐛 Quick Fixes
-
-### "Table doesn't exist"
-→ Run Step 1 SQL again
-
-### "Bucket not found"
-→ Create `tomato-leaves` bucket (Step 1.3)
-
-### "Can't login"
-→ Check user metadata has `"role": "admin"`
-
-### "Images not showing"
-→ Make sure bucket is **Public**
-
-### Backend error
-→ Check `.env` file exists in `backend/`
-
-### Frontend error
-→ Check `.env.local` exists in `frontend/`
-
----
-
-## 📁 File Locations
-
-```
-✅ frontend/.env.local          (Supabase credentials)
-✅ frontend/src/lib/supabase.ts (Supabase client)
-✅ frontend/src/app/admin/      (Admin pages)
-✅ backend/.env                 (Supabase credentials)
-✅ backend/supabase_client.py   (Supabase client)
-✅ backend/admin_routes.py      (Admin API)
-```
-
----
-
-## 🎯 Test Checklist
-
-- [ ] Backend running on port 8000
-- [ ] Frontend running on port 3000
-- [ ] Can upload image at `/fito`
-- [ ] Image appears in Supabase Storage
-- [ ] Record in predictions table
-- [ ] Can login at `/admin/login`
-- [ ] Dashboard shows stats
-- [ ] Can filter dataset
-- [ ] Can preview image
-- [ ] Can relabel image
-- [ ] Can download image
-- [ ] Can export CSV
-
----
-
-## 📚 Full Documentation
-
-- **Setup Details**: `SUPABASE_SETUP.md`
-- **Complete Guide**: `ADMIN_DASHBOARD_README.md`
-- **API Docs**: http://localhost:8000/docs
-
----
-
-## 🆘 Need Help?
-
-1. Check Supabase dashboard for data
-2. Check browser console (F12)
-3. Check terminal for errors
-4. Review `SUPABASE_SETUP.md`
-
----
-
-**Ready to use!** 🎉
-

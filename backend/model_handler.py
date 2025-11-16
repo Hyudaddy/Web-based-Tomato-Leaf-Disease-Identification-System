@@ -10,7 +10,7 @@ class TomatoDiseasePredictor:
         self.model = None
         self.class_names = [
             'Bacterial Spot',
-            'Early Blight', 
+            'Early Blight',
             'Late Blight',
             'Leaf Mold',
             'Septoria Leaf Spot',
@@ -18,8 +18,12 @@ class TomatoDiseasePredictor:
             'Target Spot',
             'Yellow Leaf Curl Virus',
             'Mosaic Virus',
-            'Healthy'
+            'Healthy',
+            'Unidentified'
         ]
+        # Confidence threshold: predictions below this will be marked as unidentified
+        # Set to 0.85 (85%) to accept valid tomato leaf predictions while rejecting non-tomato images
+        self.confidence_threshold = 0.85
         self.load_model(model_path)
     
     def load_model(self, model_path):
@@ -41,8 +45,8 @@ class TomatoDiseasePredictor:
             if image.mode != 'RGB':
                 image = image.convert('RGB')
             
-            # Resize to 128x128 (same as training)
-            image = image.resize((128, 128))
+            # Resize to 192x192 (same as training)
+            image = image.resize((192, 192))
             
             # Convert to numpy array and normalize
             image_array = np.array(image) / 255.0
@@ -69,6 +73,27 @@ class TomatoDiseasePredictor:
             predicted_class_idx = np.argmax(predictions[0])
             confidence = float(predictions[0][predicted_class_idx])
             predicted_class = self.class_names[predicted_class_idx]
+            
+            # Check if confidence is below threshold
+            if confidence < self.confidence_threshold:
+                return {
+                    'predicted_class': 'Unidentified',
+                    'confidence': confidence,
+                    'confidence_level': 'low',
+                    'reliability': 'unreliable',
+                    'all_predictions': [],
+                    'safety_recommendations': {
+                        'disclaimer': 'This image does not appear to be a tomato leaf or the disease is not clearly identifiable.',
+                        'confidence_threshold': self.confidence_threshold,
+                        'next_steps': [
+                            '❌ Image not recognized as a tomato leaf',
+                            '📸 Please upload a clear image of a tomato leaf',
+                            '💡 Ensure the image shows the leaf clearly',
+                            '🌱 Try a different angle or lighting'
+                        ]
+                    },
+                    'is_unidentified': True
+                }
             
             # Determine confidence level and reliability
             if confidence >= 0.90:
@@ -101,7 +126,8 @@ class TomatoDiseasePredictor:
                 'confidence_level': confidence_level,
                 'reliability': reliability,
                 'all_predictions': all_predictions,
-                'safety_recommendations': safety_recommendations
+                'safety_recommendations': safety_recommendations,
+                'is_unidentified': False
             }
             
         except Exception as e:

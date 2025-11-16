@@ -78,7 +78,22 @@ async def predict_disease(file: UploadFile = File(...)):
         # Make prediction
         result = predictor.predict(image_bytes)
         
-        # Save to Supabase
+        # Check if image is unidentified
+        if result.get('is_unidentified', False):
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "success": False,
+                    "error": "Image not recognized",
+                    "prediction": "Unidentified",
+                    "confidence": result['confidence'],
+                    "message": "This image does not appear to be a tomato leaf or the disease is not clearly identifiable.",
+                    "recommendations": result['safety_recommendations']['next_steps'],
+                    "filename": file.filename
+                }
+            )
+        
+        # Save to Supabase (only for healthy and diseased predictions)
         try:
             supabase = get_supabase_client()
             
@@ -111,7 +126,7 @@ async def predict_disease(file: UploadFile = File(...)):
             
             supabase.table("predictions").insert(prediction_data).execute()
             
-            print(f"✅ Saved prediction to Supabase: {file_id}")
+            print(f"✅ Saved prediction to Supabase: {file_id} - {result['predicted_class']}")
         except Exception as db_error:
             print(f"⚠️ Failed to save to Supabase: {db_error}")
             # Continue even if database save fails

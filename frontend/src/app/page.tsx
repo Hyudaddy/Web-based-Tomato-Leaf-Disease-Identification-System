@@ -16,7 +16,7 @@ export default function Home() {
         <div className="w-16 h-16 bg-[#47f793] rounded-full flex items-center justify-center mx-auto mb-4">
           <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
         </div>
-        <p className="text-gray-600">Redirecting to Fito...</p>
+        <p className="text-gray-600">Loading...</p>
       </div>
     </div>
   )

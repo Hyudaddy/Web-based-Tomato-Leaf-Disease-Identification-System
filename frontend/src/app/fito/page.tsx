@@ -76,6 +76,7 @@ export default function FitoPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [result, setResult] = useState<PredictionResult | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [unidentifiedMessage, setUnidentifiedMessage] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -112,6 +113,8 @@ export default function FitoPage() {
 
     setIsLoading(true)
     setError(null)
+    setResult(null)
+    setUnidentifiedMessage(null)
 
     try {
       const formData = new FormData()
@@ -124,14 +127,18 @@ export default function FitoPage() {
         body: formData,
       })
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+      const data = await response.json()
+
+      // Check if response indicates an error (unidentified image)
+      if (!response.ok || data.success === false) {
+        setUnidentifiedMessage(data.message || data.error || 'Image not recognized as a tomato leaf')
+        setResult(null)
+        return
       }
 
-      const data = await response.json()
       setResult(data)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      setError(err instanceof Error ? err.message : 'An error occurred during prediction')
     } finally {
       setIsLoading(false)
     }
@@ -142,6 +149,7 @@ export default function FitoPage() {
     setPreviewUrl(null)
     setResult(null)
     setError(null)
+    setUnidentifiedMessage(null)
   }
 
   // Calculate model metrics (mock data for now)
@@ -240,15 +248,16 @@ export default function FitoPage() {
                 </h2>
                 <div>
                   <div className="text-[64px] font-bold text-gray-900 leading-none" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
-                    {result ? result.prediction : 'None'}
+                    {unidentifiedMessage ? 'Unidentified' : (result ? result.prediction : 'None')}
                   </div>
-                  <div className="text-2xl text-gray-600 mt-2">
-                    {result ? `${(result.confidence * 100).toFixed(2)}%` : '0%'}
+                  <div className={`text-2xl mt-2 ${unidentifiedMessage ? 'text-red-600' : 'text-gray-600'}`}>
+                    {unidentifiedMessage ? 'Image is not recognized' : (result ? `${(result.confidence * 100).toFixed(2)}%` : '0%')}
                   </div>
                 </div>
               </div>
 
               {/* Evaluation System - Always Visible with Green Theme */}
+              {!unidentifiedMessage && (
               <div className="border-t border-gray-200 pt-8">
                 <h3 className="text-sm text-gray-600 mb-6">Evaluation System</h3>
                 <div className="grid grid-cols-4 gap-6">
@@ -317,9 +326,11 @@ export default function FitoPage() {
                   </div>
                 </div>
               </div>
+              )}
           </div>
 
           {/* BOTTOM LEFT - All Predictions */}
+          {!unidentifiedMessage && (
           <div className="border-t border-gray-200 pt-8 space-y-6">
             <h3 className="text-sm text-gray-600 mb-4">All Predictions</h3>
             
@@ -355,8 +366,10 @@ export default function FitoPage() {
               </div>
             )}
           </div>
+          )}
 
           {/* BOTTOM RIGHT - Disease Information */}
+          {!unidentifiedMessage && (
           <div className="border-t border-gray-200 pt-8 space-y-6">
               <h3 className="text-sm text-gray-600 mb-4">Disease Information</h3>
               
@@ -440,6 +453,7 @@ export default function FitoPage() {
                 </div>
               )}
           </div>
+          )}
         </div>
         </AnimatedSection>
       </main>

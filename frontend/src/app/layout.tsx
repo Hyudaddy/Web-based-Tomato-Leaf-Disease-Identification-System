@@ -12,8 +12,8 @@ const montserrat = Montserrat({
 })
 
 export const metadata: Metadata = {
-  title: 'Fito - AI-Powered Tomato Disease Detection',
-  description: 'Detect tomato leaf diseases with 85% accuracy using advanced AI technology. Get instant diagnosis, treatment recommendations, and prevention strategies.',
+  title: 'Tomato Leaf Disease Identification System',
+  description: 'Detect tomato leaf diseases with 85% accuracy using Machine Learning technology. Get instant diagnosis, treatment recommendations, and prevention strategies.',
 }
 
 export default function RootLayout({
