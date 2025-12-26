@@ -86,7 +86,7 @@ Thumbs.db
 
 # Jupyter Notebooks
 .ipynb_checkpoints/
-*.ipynb
+# *.ipynb
 
 # Temporary files
 *.tmp
