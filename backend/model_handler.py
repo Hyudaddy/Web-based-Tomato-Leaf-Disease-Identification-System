@@ -22,17 +22,17 @@ class TomatoDiseasePredictor:
             'Unidentified'
         ]
         # Confidence threshold: predictions below this will be marked as unidentified
-        # Set to 0.85 (85%) to accept valid tomato leaf predictions while rejecting non-tomato images
-        self.confidence_threshold = 0.85
+        # Set to 0.50 (50%) to be less aggressive, as the model has a specific 'Unidentified' class
+        self.confidence_threshold = 0.50
         self.load_model(model_path)
     
     def load_model(self, model_path):
         """Load the trained model"""
         try:
             self.model = tf.keras.models.load_model(model_path)
-            print(f"✓ Model loaded successfully from {model_path}")
+            print(f"[SUCCESS] Model loaded successfully from {model_path}")
         except Exception as e:
-            print(f"❌ Error loading model: {e}")
+            print(f"[ERROR] Error loading model: {e}")
             raise e
     
     def preprocess_image(self, image_bytes):
@@ -45,8 +45,8 @@ class TomatoDiseasePredictor:
             if image.mode != 'RGB':
                 image = image.convert('RGB')
             
-            # Resize to 192x192 (same as training)
-            image = image.resize((192, 192))
+            # Resize to 224x224 (same as training)
+            image = image.resize((224, 224))
             
             # Convert to numpy array and normalize
             image_array = np.array(image) / 255.0
@@ -57,7 +57,7 @@ class TomatoDiseasePredictor:
             return image_array
             
         except Exception as e:
-            print(f"❌ Error preprocessing image: {e}")
+            print(f"[ERROR] Error preprocessing image: {e}")
             raise e
     
     def predict(self, image_bytes):
@@ -86,10 +86,10 @@ class TomatoDiseasePredictor:
                         'disclaimer': 'This image does not appear to be a tomato leaf or the disease is not clearly identifiable.',
                         'confidence_threshold': self.confidence_threshold,
                         'next_steps': [
-                            '❌ Image not recognized as a tomato leaf',
-                            '📸 Please upload a clear image of a tomato leaf',
-                            '💡 Ensure the image shows the leaf clearly',
-                            '🌱 Try a different angle or lighting'
+                            'Image not recognized as a tomato leaf',
+                            'Please upload a clear image of a tomato leaf',
+                            'Ensure the image shows the leaf clearly',
+                            'Try a different angle or lighting'
                         ]
                     },
                     'is_unidentified': True
@@ -131,7 +131,7 @@ class TomatoDiseasePredictor:
             }
             
         except Exception as e:
-            print(f"❌ Error making prediction: {e}")
+            print(f"[ERROR] Error making prediction: {e}")
             raise e
     
     def _get_safety_recommendations(self, predicted_class, confidence_level):

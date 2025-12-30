@@ -30,7 +30,8 @@ app.add_middleware(
 )
 
 # Initialize model predictor
-model_path = "trained_model_fito.h5"
+# Get absolute path to model file (relative to this script)
+model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "trained_model_fito_outdoor.h5")
 if not os.path.exists(model_path):
     raise FileNotFoundError(f"Model file not found: {model_path}")
 
@@ -126,9 +127,9 @@ async def predict_disease(file: UploadFile = File(...)):
             
             supabase.table("predictions").insert(prediction_data).execute()
             
-            print(f"✅ Saved prediction to Supabase: {file_id} - {result['predicted_class']}")
+            print(f"[SUCCESS] Saved prediction to Supabase: {file_id} - {result['predicted_class']}")
         except Exception as db_error:
-            print(f"⚠️ Failed to save to Supabase: {db_error}")
+            print(f"[WARNING] Failed to save to Supabase: {db_error}")
             # Continue even if database save fails
         
         return JSONResponse(content={
@@ -140,7 +141,7 @@ async def predict_disease(file: UploadFile = File(...)):
         })
         
     except Exception as e:
-        print(f"❌ Prediction error: {e}")
+        print(f"[ERROR] Prediction error: {e}")
         raise HTTPException(
             status_code=500,
             detail=f"Prediction failed: {str(e)}"
@@ -155,7 +156,7 @@ async def get_classes():
     }
 
 if __name__ == "__main__":
-    print("🍅 Starting Fito API Server...")
+    print("[FITO] Starting Fito API Server...")
     print("=" * 50)
     print("API Documentation: http://localhost:8000/docs")
     print("Health Check: http://localhost:8000/health")

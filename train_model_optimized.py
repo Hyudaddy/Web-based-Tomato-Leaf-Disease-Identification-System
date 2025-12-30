@@ -1,10 +1,26 @@
 #!/usr/bin/env python3
 """
-Optimized training script for full dataset with better accuracy on low-quality images
-Option C: Balanced approach - 192x192 images, good augmentation, 35 epochs with early stopping
+================================================================================
+FITO - TOMATO LEAF DISEASE DETECTION MODEL TRAINING SCRIPT
+================================================================================
+
+This script handles the complete training pipeline for the disease classification model.
+
+TRAINING PROCESS FLOW:
+----------------------
+1. CONFIGURATION     - Set hyperparameters (epochs, batch size, learning rate)
+2. DATA PREPARATION  - Load and augment training/validation images
+3. MODEL BUILDING    - Create neural network using transfer learning (MobileNetV2)
+4. TRAINING          - Train the model on the dataset
+5. VALIDATION        - Evaluate model performance on unseen data
+6. SAVING            - Save trained model and training history
+
 Optimized for CPU training (Intel Core i3)
 """
 
+# ================================================================================
+# IMPORTS - Required libraries for deep learning and data processing
+# ================================================================================
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.applications import MobileNetV2
@@ -16,20 +32,27 @@ import os
 import json
 from datetime import datetime
 
-# Dataset paths
-DATASET_PATH = r"C:\Users\HYUDADDY\Desktop\DATASET\tomato leaf diseases dataset(augmented)"
-TRAIN_PATH = os.path.join(DATASET_PATH, "training")
-VAL_PATH = os.path.join(DATASET_PATH, "validation")
-MODEL_SAVE_PATH = r"C:\Users\HYUDADDY\Desktop\TLDI_system\backend\trained_model_fito.h5"
-BACKUP_MODEL_PATH = r"C:\Users\HYUDADDY\Desktop\TLDI_system\backend\trained_model_fito_backup.h5"
-HISTORY_PATH = r"C:\Users\HYUDADDY\Desktop\TLDI_system\training_history.json"
+# ================================================================================
+# STEP 1: CONFIGURATION - Define paths and hyperparameters
+# ================================================================================
+# This is where we configure all the settings BEFORE training begins.
+# The hyperparameters control HOW the model learns.
 
-# Optimized hyperparameters for CPU (Option C - Balanced)
-IMG_SIZE = 192  # Balanced: not too large for CPU, good for feature extraction
-BATCH_SIZE = 20  # Reduced from 32 for CPU efficiency and better gradient updates
-EPOCHS = 35  # Increased from 20 for better training
-LEARNING_RATE = 0.0005  # Reduced from 0.001 for more careful learning
-VALIDATION_SPLIT = 0.2
+# Dataset paths - Where the images are stored
+DATASET_PATH = r"C:\Users\altai\Desktop\DATASET\tomato leaf diseases dataset(augmented)"
+TRAIN_PATH = os.path.join(DATASET_PATH, "training")     # Training images (80%)
+VAL_PATH = os.path.join(DATASET_PATH, "validation")     # Validation images (20%)
+MODEL_SAVE_PATH = r"C:\Users\altai\Desktop\TLDI_system\backend\trained_model_fito.h5"
+BACKUP_MODEL_PATH = r"C:\Users\altai\Desktop\TLDI_system\backend\trained_model_fito_backup.h5"
+HISTORY_PATH = r"C:\Users\altai\Desktop\TLDI_system\training_history.json"
+
+# HYPERPARAMETERS - These control how the model learns
+# -------------------------------------------------------------------
+IMG_SIZE = 192      # Image resolution: 192x192 pixels (input size to model)
+BATCH_SIZE = 20     # Number of images processed together in one step
+EPOCHS = 35         # Number of complete passes through the entire dataset
+LEARNING_RATE = 0.0005  # How fast the model adjusts weights (lower = more careful)
+VALIDATION_SPLIT = 0.2  # 20% of data used for validation
 
 print("=" * 80)
 print("TOMATO LEAF DISEASE DETECTION - OPTIMIZED FULL DATASET TRAINING")
@@ -43,38 +66,42 @@ print(f"   • Device: CPU (Intel Core i3)")
 print(f"   • Dataset Path: {DATASET_PATH}")
 print(f"\n⏱️  Estimated training time: 30-60 minutes (depending on dataset size)")
 
-# Enhanced data augmentation for low-quality images
-# This helps the model learn to recognize diseases even in poor lighting/quality
+# ================================================================================
+# STEP 2: DATA PREPARATION - Configure how images are loaded and augmented
+# ================================================================================
+# Data augmentation artificially increases dataset variety by creating modified
+# versions of images (rotated, flipped, brightness adjusted). This helps the
+# model generalize better to real-world images with different lighting/angles.
+
+# TRAINING DATA AUGMENTATION - Apply transformations to increase variety
 train_datagen = ImageDataGenerator(
-    rescale=1./255,
-    # Rotation and shift
-    rotation_range=25,  # Increased from 20
-    width_shift_range=0.25,  # Increased from 0.2
-    height_shift_range=0.25,  # Increased from 0.2
-    shear_range=0.25,  # Increased from 0.2
-    zoom_range=0.25,  # Increased from 0.2
-    # NEW: Brightness and contrast adjustments for low-quality images
-    brightness_range=[0.7, 1.3],  # Handle dim/bright images
-    # Flips
-    horizontal_flip=True,
-    vertical_flip=True,  # NEW: Additional flip for leaf orientation
-    fill_mode='nearest'
+    rescale=1./255,             # Normalize pixel values from 0-255 to 0-1
+    rotation_range=25,          # Rotate images randomly up to 25 degrees
+    width_shift_range=0.25,     # Shift image horizontally by up to 25%
+    height_shift_range=0.25,    # Shift image vertically by up to 25%
+    shear_range=0.25,           # Apply shearing transformation
+    zoom_range=0.25,            # Zoom in/out by up to 25%
+    brightness_range=[0.7, 1.3],  # Adjust brightness (for poor lighting)
+    horizontal_flip=True,       # Flip images horizontally
+    vertical_flip=True,         # Flip images vertically
+    fill_mode='nearest'         # How to fill empty pixels after transforms
 )
 
-# Only rescaling for validation (no augmentation)
+# VALIDATION DATA - Only normalize, NO augmentation (to test on real data)
 val_datagen = ImageDataGenerator(rescale=1./255)
 
-# Load training data
+# LOAD TRAINING DATA - Read images from the training folder
+# The generator reads images from folders, where each folder name = class label
 print("\n" + "=" * 80)
-print("Loading training data...")
+print("STEP 2A: Loading training data...")
 print("=" * 80)
 try:
     train_generator = train_datagen.flow_from_directory(
-        TRAIN_PATH,
-        target_size=(IMG_SIZE, IMG_SIZE),
-        batch_size=BATCH_SIZE,
-        class_mode='categorical',
-        shuffle=True
+        TRAIN_PATH,                         # Path to training images folder
+        target_size=(IMG_SIZE, IMG_SIZE),   # Resize all images to 192x192
+        batch_size=BATCH_SIZE,              # Load 20 images at a time
+        class_mode='categorical',           # Multi-class classification (one-hot)
+        shuffle=True                        # Randomize order each epoch
     )
     print(f"✓ Training data loaded successfully")
 except Exception as e:
@@ -82,15 +109,15 @@ except Exception as e:
     print(f"Please ensure training data exists at: {TRAIN_PATH}")
     raise
 
-# Load validation data
-print("Loading validation data...")
+# LOAD VALIDATION DATA - Used to check model performance during training
+print("STEP 2B: Loading validation data...")
 try:
     val_generator = val_datagen.flow_from_directory(
-        VAL_PATH,
-        target_size=(IMG_SIZE, IMG_SIZE),
+        VAL_PATH,                           # Path to validation images folder
+        target_size=(IMG_SIZE, IMG_SIZE),   # Same size as training
         batch_size=BATCH_SIZE,
         class_mode='categorical',
-        shuffle=False
+        shuffle=False                       # Don't shuffle for consistent evaluation
     )
     print(f"✓ Validation data loaded successfully")
 except Exception as e:
@@ -104,96 +131,125 @@ print(f"   • Validation samples: {val_generator.samples}")
 print(f"   • Number of classes: {train_generator.num_classes}")
 print(f"   • Classes: {list(train_generator.class_indices.keys())}")
 
-# Build model using transfer learning
+# ================================================================================
+# STEP 3: MODEL BUILDING - Create the neural network architecture
+# ================================================================================
+# We use TRANSFER LEARNING: start with a pre-trained model (MobileNetV2)
+# that already knows how to extract image features, then add our own
+# classification layers on top for tomato disease detection.
+
 print("\n" + "=" * 80)
-print("Building model with MobileNetV2 transfer learning...")
+print("STEP 3: Building model with MobileNetV2 transfer learning...")
 print("=" * 80)
 
-# Load pre-trained MobileNetV2
+# STEP 3A: Load pre-trained MobileNetV2 (trained on ImageNet - 1M+ images)
+# This model already knows how to recognize patterns, edges, textures, etc.
 base_model = MobileNetV2(
-    input_shape=(IMG_SIZE, IMG_SIZE, 3),
-    include_top=False,
-    weights='imagenet'
+    input_shape=(IMG_SIZE, IMG_SIZE, 3),  # 192x192 RGB images
+    include_top=False,                     # Remove original classification layer
+    weights='imagenet'                     # Use pre-trained ImageNet weights
 )
 
-# Freeze base model layers for transfer learning
+# STEP 3B: Freeze base model - Don't retrain the pre-trained layers
+# We only want to train our custom layers on top
 base_model.trainable = False
 
-# Add custom top layers with improved architecture
+# STEP 3C: Add custom classification layers for tomato disease detection
+# This is where we customize for our specific 11-class problem
 inputs = tf.keras.Input(shape=(IMG_SIZE, IMG_SIZE, 3))
-x = base_model(inputs, training=False)
-x = GlobalAveragePooling2D()(x)
-x = Dropout(0.3)(x)  # Increased from 0.2
-x = Dense(512, activation='relu')(x)  # Increased from 256
-x = Dropout(0.3)(x)  # Increased from 0.2
-x = Dense(256, activation='relu')(x)  # NEW: Additional dense layer
+x = base_model(inputs, training=False)    # Pass through MobileNetV2
+x = GlobalAveragePooling2D()(x)           # Reduce feature maps to 1D
+x = Dropout(0.3)(x)                       # Dropout: randomly disable 30% of neurons (prevents overfitting)
+x = Dense(512, activation='relu')(x)      # Fully connected layer: 512 neurons
+x = Dropout(0.3)(x)                       # More dropout
+x = Dense(256, activation='relu')(x)      # Fully connected layer: 256 neurons
 x = Dropout(0.2)(x)
-outputs = Dense(train_generator.num_classes, activation='softmax')(x)
+outputs = Dense(train_generator.num_classes, activation='softmax')(x)  # Output: 11 classes
 
 model = Model(inputs, outputs)
 
-# Compile model
+# STEP 3D: Compile model - Define how it learns
 model.compile(
-    optimizer=Adam(learning_rate=LEARNING_RATE),
-    loss='categorical_crossentropy',
-    metrics=['accuracy']
+    optimizer=Adam(learning_rate=LEARNING_RATE),  # Optimizer: how weights are updated
+    loss='categorical_crossentropy',               # Loss function for multi-class
+    metrics=['accuracy']                           # Track accuracy during training
 )
 
 print("\n📐 Model Summary:")
 model.summary()
 
-# Callbacks for better training
+# ================================================================================
+# STEP 4: TRAINING - Train the model on the dataset
+# ================================================================================
+# This is the main training loop where the model learns from the images.
+# For each epoch, the model sees ALL training images and adjusts its weights.
+
+# CALLBACKS - Special functions that run during training
 callbacks = [
-    # Save best model during training
+    # ModelCheckpoint: Save the model whenever validation accuracy improves
     ModelCheckpoint(
         MODEL_SAVE_PATH,
-        monitor='val_accuracy',
-        save_best_only=True,
+        monitor='val_accuracy',    # Watch validation accuracy
+        save_best_only=True,       # Only save if it's the best so far
         mode='max',
         verbose=1
     ),
-    # Early stopping to prevent overfitting
+    # EarlyStopping: Stop training if model stops improving (prevents overfitting)
     EarlyStopping(
         monitor='val_loss',
-        patience=5,  # Stop if no improvement for 5 epochs
-        restore_best_weights=True,
+        patience=5,                # Stop if no improvement for 5 epochs
+        restore_best_weights=True, # Go back to the best weights
         verbose=1
     ),
-    # Reduce learning rate if validation loss plateaus
+    # ReduceLROnPlateau: Lower learning rate if training plateaus
     ReduceLROnPlateau(
         monitor='val_loss',
-        factor=0.5,
-        patience=3,
+        factor=0.5,                # Reduce LR by half
+        patience=3,                # Wait 3 epochs before reducing
         min_lr=1e-7,
         verbose=1
     )
 ]
 
-# Train model
+# *** THIS IS WHERE THE ACTUAL TRAINING HAPPENS ***
 print("\n" + "=" * 80)
-print("Starting training with full dataset...")
+print("STEP 4: Starting training with full dataset...")
 print("=" * 80)
 print("⏳ This may take 30-60 minutes on CPU. Please be patient...\n")
 
+# model.fit() - THE MAIN TRAINING FUNCTION
+# Each epoch: model processes all 20,452 training images in batches of 20
+# After each epoch: evaluate on 5,488 validation images to track progress
 history = model.fit(
-    train_generator,
-    epochs=EPOCHS,
-    validation_data=val_generator,
-    callbacks=callbacks,
-    verbose=1
+    train_generator,              # Training data
+    epochs=EPOCHS,                # Train for 35 epochs (or until early stop)
+    validation_data=val_generator,  # Validation data to monitor overfitting
+    callbacks=callbacks,          # Run checkpoint, early stop, LR reduction
+    verbose=1                     # Show progress bar
 )
 
-# Evaluate on validation set
+# ================================================================================
+# STEP 5: VALIDATION/TESTING - Evaluate the trained model
+# ================================================================================
+# After training, we evaluate the model on the validation set one final time
+# to get the official accuracy metrics.
+
 print("\n" + "=" * 80)
-print("Evaluating model on validation set...")
+print("STEP 5: Evaluating model on validation set...")
 print("=" * 80)
 
+# Evaluate the model on validation data (5,488 images it hasn't trained on)
 val_loss, val_accuracy = model.evaluate(val_generator)
 print(f"\n✅ Validation Loss: {val_loss:.4f}")
 print(f"✅ Validation Accuracy: {val_accuracy:.4f} ({val_accuracy*100:.2f}%)")
 
-# Save training history
-print(f"\nSaving training history...")
+# ================================================================================
+# STEP 6: SAVING - Save the trained model and training history
+# ================================================================================
+# Save the model file (.h5) and training metrics for later analysis.
+# The model file is what gets loaded by the backend API for predictions.
+
+print(f"\nSTEP 6: Saving training history...")
 history_dict = {
     'accuracy': [float(x) for x in history.history['accuracy']],
     'loss': [float(x) for x in history.history['loss']],

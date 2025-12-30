@@ -1,0 +1,106 @@
+{
+  "timestamp": "2025-12-07T23:34:18.089071",
+  "overall_accuracy": 0.9017857142857143,
+  "total_test_images": 5488,
+  "classes": [
+    {
+      "name": "Bacterial Spot",
+      "technical_name": "Tomato___Bacterial_spot",
+      "test_images": 425,
+      "accuracy": 0.9505882352941176,
+      "precision": 0.8782608695652174,
+      "recall": 0.9505882352941176,
+      "f1_score": 0.9129943502824859
+    },
+    {
+      "name": "Early Blight",
+      "technical_name": "Tomato___Early_blight",
+      "test_images": 480,
+      "accuracy": 0.8125,
+      "precision": 0.87248322147651,
+      "recall": 0.8125,
+      "f1_score": 0.8414239482200647
+    },
+    {
+      "name": "Late Blight",
+      "technical_name": "Tomato___Late_blight",
+      "test_images": 463,
+      "accuracy": 0.8768898488120951,
+      "precision": 0.8903508771929824,
+      "recall": 0.8768898488120951,
+      "f1_score": 0.8835690968443961
+    },
+    {
+      "name": "Leaf Mold",
+      "technical_name": "Tomato___Leaf_Mold",
+      "test_images": 470,
+      "accuracy": 0.9553191489361702,
+      "precision": 0.8873517786561265,
+      "recall": 0.9553191489361702,
+      "f1_score": 0.9200819672131147
+    },
+    {
+      "name": "Septoria Leaf Spot",
+      "technical_name": "Tomato___Septoria_leaf_spot",
+      "test_images": 436,
+      "accuracy": 0.8279816513761468,
+      "precision": 0.8615751789976134,
+      "recall": 0.8279816513761468,
+      "f1_score": 0.8444444444444444
+    },
+    {
+      "name": "Spider Mites",
+      "technical_name": "Tomato___Spider_mites Two-spotted_spider_mite",
+      "test_images": 435,
+      "accuracy": 0.8620689655172413,
+      "precision": 0.8081896551724138,
+      "recall": 0.8620689655172413,
+      "f1_score": 0.8342602892102335
+    },
+    {
+      "name": "Target Spot",
+      "technical_name": "Tomato___Target_Spot",
+      "test_images": 457,
+      "accuracy": 0.8446389496717724,
+      "precision": 0.75390625,
+      "recall": 0.8446389496717724,
+      "f1_score": 0.7966976264189887
+    },
+    {
+      "name": "Yellow Leaf Curl Virus",
+      "technical_name": "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+      "test_images": 490,
+      "accuracy": 0.9387755102040817,
+      "precision": 0.989247311827957,
+      "recall": 0.9387755102040817,
+      "f1_score": 0.9633507853403142
+    },
+    {
+      "name": "Mosaic Virus",
+      "technical_name": "Tomato___Tomato_mosaic_virus",
+      "test_images": 448,
+      "accuracy": 0.984375,
+      "precision": 0.9245283018867925,
+      "recall": 0.984375,
+      "f1_score": 0.9535135135135135
+    },
+    {
+      "name": "Healthy",
+      "technical_name": "Tomato___healthy",
+      "test_images": 481,
+      "accuracy": 0.7837837837837838,
+      "precision": 0.9869109947643979,
+      "recall": 0.7837837837837838,
+      "f1_score": 0.8736964078794901
+    },
+    {
+      "name": "Unidentified",
+      "technical_name": "Unidentified",
+      "test_images": 903,
+      "accuracy": 0.9966777408637874,
+      "precision": 1.0,
+      "recall": 0.9966777408637874,
+      "f1_score": 0.9983361064891847
+    }
+  ]
+}

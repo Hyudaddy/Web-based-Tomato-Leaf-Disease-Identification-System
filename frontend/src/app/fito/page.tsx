@@ -38,9 +38,8 @@ const AnimatedSection = ({ children, delay = 0 }: { children: React.ReactNode, d
   return (
     <div
       ref={ref}
-      className={`transition-all duration-1000 ease-out ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
-      }`}
+      className={`transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
+        }`}
       style={{ transitionDelay: `${delay}ms` }}
     >
       {children}
@@ -152,12 +151,12 @@ export default function FitoPage() {
     setUnidentifiedMessage(null)
   }
 
-  // Calculate model metrics (mock data for now)
+  // Real model metrics from performance evaluation (overall weighted averages)
   const modelMetrics = {
-    accuracy: 0.8504,
-    precision: 0.8234,
-    recall: 0.7891,
-    f1Score: 0.8060
+    accuracy: 0.9018,
+    precision: 0.8959,
+    recall: 0.9018,
+    f1Score: 0.8929
   }
 
   const currentDiseaseInfo = result ? getDiseaseInfo(result.prediction) : null
@@ -167,52 +166,51 @@ export default function FitoPage() {
       {/* Four Grid Layout - 2x2 explicit grid */}
       <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-8">
         <AnimatedSection>
-        <div className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-x-8 gap-y-8">
-          {/* TOP LEFT - Upload Section */}
-          <div className="flex flex-col gap-8">
-            {/* Upload Area - Fixed Height */}
-            <div className="h-[400px]">
-            {!selectedFile ? (
-              <div
-                  className="h-full border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-[#47f793] transition-all duration-300 ease-out cursor-pointer hover:bg-gray-50 flex items-center justify-center"
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-                onClick={() => document.getElementById('file-input')?.click()}
-              >
-                <div className="space-y-4">
-                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto transition-all duration-300 ease-out hover:bg-[#47f793] group">
-                      <svg className="w-8 h-8 text-gray-600 group-hover:text-gray-900 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                  </div>
-                  <div>
-                      <h4 className="text-lg font-medium text-gray-900 mb-2">
-                      Upload Tomato Leaf
-                    </h4>
-                      <p className="text-sm text-gray-600">
-                        Drag and drop or click to browse
-                    </p>
+          <div className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-x-8 gap-y-8">
+            {/* TOP LEFT - Upload Section */}
+            <div className="flex flex-col gap-8">
+              {/* Upload Area - Fixed Height */}
+              <div className="h-[400px]">
+                {!selectedFile ? (
+                  <div
+                    className="h-full border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-[#47f793] transition-all duration-300 ease-out cursor-pointer hover:bg-gray-50 flex items-center justify-center"
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
+                    onClick={() => document.getElementById('file-input')?.click()}
+                  >
+                    <div className="space-y-4">
+                      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto transition-all duration-300 ease-out hover:bg-[#47f793] group">
+                        <svg className="w-8 h-8 text-gray-600 group-hover:text-gray-900 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h4 className="text-lg font-medium text-gray-900 mb-2">
+                          Upload Tomato Leaf
+                        </h4>
+                        <p className="text-sm text-gray-600">
+                          Drag and drop or click to browse
+                        </p>
+                      </div>
                     </div>
-                </div>
-              </div>
-            ) : (
-                <div className="relative h-full">
+                  </div>
+                ) : (
+                  <div className="relative h-full">
                     <Image
                       src={previewUrl!}
                       alt="Uploaded tomato leaf"
-                    width={400}
-                    height={400}
-                    className="w-full h-full rounded-lg object-cover"
+                      fill
+                      className="rounded-lg object-cover"
                     />
                     <button
                       onClick={resetUpload}
-                    className="absolute top-4 right-4 bg-white text-gray-900 rounded-full w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition-all duration-300 ease-out shadow-lg hover:scale-110 active:scale-95"
+                      className="absolute top-4 right-4 bg-white text-gray-900 rounded-full w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition-all duration-300 ease-out shadow-lg hover:scale-110 active:scale-95"
                     >
                       ×
                     </button>
                   </div>
-              )}
-                </div>
+                )}
+              </div>
 
               {/* Analyze Button - Always Visible */}
               <button
@@ -230,17 +228,17 @@ export default function FitoPage() {
                 )}
               </button>
 
-            <input
-              id="file-input"
-              type="file"
-              accept="image/*"
-              onChange={handleFileSelect}
-              className="hidden"
-            />
-          </div>
+              <input
+                id="file-input"
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+            </div>
 
-          {/* TOP RIGHT - Analysis Result + Evaluation System */}
-          <div className="flex flex-col gap-8">
+            {/* TOP RIGHT - Analysis Result + Evaluation System */}
+            <div className="flex flex-col gap-8">
               {/* Main Analysis Score - Always Visible */}
               <div className="space-y-4">
                 <h2 className="text-[40px] font-bold text-gray-900 tracking-tight" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
@@ -258,203 +256,202 @@ export default function FitoPage() {
 
               {/* Evaluation System - Always Visible with Green Theme */}
               {!unidentifiedMessage && (
-              <div className="border-t border-gray-200 pt-8">
-                <h3 className="text-sm text-gray-600 mb-6">Evaluation System</h3>
-                <div className="grid grid-cols-4 gap-6">
-                  <div>
-                    <div className="text-xs text-gray-600 mb-2">Accuracy</div>
-                    <div className="text-xs text-[#47f793] font-semibold mb-3">
-                      {result ? `${Math.round(modelMetrics.accuracy * 100)}%` : '0%'}
+                <div className="border-t border-gray-200 pt-8">
+                  <h3 className="text-sm text-gray-600 mb-6">Evaluation System</h3>
+                  <div className="grid grid-cols-4 gap-6">
+                    <div>
+                      <div className="text-xs text-gray-600 mb-2">Accuracy</div>
+                      <div className="text-xs text-[#47f793] font-semibold mb-3">
+                        {result ? `${Math.round(modelMetrics.accuracy * 100)}%` : '0%'}
+                      </div>
+                      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-[#47f793] transition-all duration-500"
+                          style={{ width: result ? `${modelMetrics.accuracy * 100}%` : '0%' }}
+                        ></div>
+                      </div>
+                      <div className="text-sm font-medium text-gray-900 mt-3">
+                        {result ? `${(modelMetrics.accuracy * 10).toFixed(2)} / 10` : '0.00 / 10'}
+                      </div>
                     </div>
-                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-[#47f793] transition-all duration-500"
-                        style={{ width: result ? `${modelMetrics.accuracy * 100}%` : '0%' }}
-                      ></div>
+
+                    <div>
+                      <div className="text-xs text-gray-600 mb-2">Precision</div>
+                      <div className="text-xs text-gray-600 font-semibold mb-3">
+                        {result ? `${Math.round(modelMetrics.precision * 100)}%` : '0%'}
+                      </div>
+                      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-[#47f793] transition-all duration-500"
+                          style={{ width: result ? `${modelMetrics.precision * 100}%` : '0%' }}
+                        ></div>
+                      </div>
+                      <div className="text-sm font-medium text-gray-900 mt-3">
+                        {result ? `${(modelMetrics.precision * 10).toFixed(2)} / 10` : '0.00 / 10'}
+                      </div>
                     </div>
-                    <div className="text-sm font-medium text-gray-900 mt-3">
-                      {result ? `${(modelMetrics.accuracy * 10).toFixed(2)} / 10` : '0.00 / 10'}
+
+                    <div>
+                      <div className="text-xs text-gray-600 mb-2">Recall</div>
+                      <div className="text-xs text-[#47f793] font-semibold mb-3">
+                        {result ? `${Math.round(modelMetrics.recall * 100)}%` : '0%'}
+                      </div>
+                      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-[#47f793] transition-all duration-500"
+                          style={{ width: result ? `${modelMetrics.recall * 100}%` : '0%' }}
+                        ></div>
+                      </div>
+                      <div className="text-sm font-medium text-gray-900 mt-3">
+                        {result ? `${(modelMetrics.recall * 10).toFixed(2)} / 10` : '0.00 / 10'}
+                      </div>
                     </div>
-                  </div>
-                  
-                  <div>
-                    <div className="text-xs text-gray-600 mb-2">Precision</div>
-                    <div className="text-xs text-gray-600 font-semibold mb-3">
-                      {result ? `${Math.round(modelMetrics.precision * 100)}%` : '0%'}
-                    </div>
-                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-[#47f793] transition-all duration-500"
-                        style={{ width: result ? `${modelMetrics.precision * 100}%` : '0%' }}
-                      ></div>
-                    </div>
-                    <div className="text-sm font-medium text-gray-900 mt-3">
-                      {result ? `${(modelMetrics.precision * 10).toFixed(2)} / 10` : '0.00 / 10'}
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <div className="text-xs text-gray-600 mb-2">Recall</div>
-                    <div className="text-xs text-[#47f793] font-semibold mb-3">
-                      {result ? `${Math.round(modelMetrics.recall * 100)}%` : '0%'}
-                    </div>
-                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-[#47f793] transition-all duration-500"
-                        style={{ width: result ? `${modelMetrics.recall * 100}%` : '0%' }}
-                      ></div>
-                    </div>
-                    <div className="text-sm font-medium text-gray-900 mt-3">
-                      {result ? `${(modelMetrics.recall * 10).toFixed(2)} / 10` : '0.00 / 10'}
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <div className="text-xs text-gray-600 mb-2">F1-Score</div>
-                    <div className="text-xs text-[#47f793] font-semibold mb-3">
-                      {result ? `${Math.round(modelMetrics.f1Score * 100)}%` : '0%'}
-                    </div>
-                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-[#47f793] transition-all duration-500"
-                        style={{ width: result ? `${modelMetrics.f1Score * 100}%` : '0%' }}
-                      ></div>
-                    </div>
-                    <div className="text-sm font-medium text-gray-900 mt-3">
-                      {result ? `${(modelMetrics.f1Score * 10).toFixed(2)} / 10` : '0.00 / 10'}
+
+                    <div>
+                      <div className="text-xs text-gray-600 mb-2">F1-Score</div>
+                      <div className="text-xs text-[#47f793] font-semibold mb-3">
+                        {result ? `${Math.round(modelMetrics.f1Score * 100)}%` : '0%'}
+                      </div>
+                      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-[#47f793] transition-all duration-500"
+                          style={{ width: result ? `${modelMetrics.f1Score * 100}%` : '0%' }}
+                        ></div>
+                      </div>
+                      <div className="text-sm font-medium text-gray-900 mt-3">
+                        {result ? `${(modelMetrics.f1Score * 10).toFixed(2)} / 10` : '0.00 / 10'}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
               )}
-          </div>
+            </div>
 
-          {/* BOTTOM LEFT - All Predictions */}
-          {!unidentifiedMessage && (
-          <div className="border-t border-gray-200 pt-8 space-y-6">
-            <h3 className="text-sm text-gray-600 mb-4">All Predictions</h3>
-            
-            {result && result.all_predictions ? (
-              <div className="space-y-4">
-                {result.all_predictions.slice(0, 10).map((pred, index) => (
-                  <div 
-                    key={index} 
-                    className="flex items-center justify-between py-4 border-b border-dotted border-gray-200 last:border-0"
-                  >
-                    <div className="flex-1">
-                      <div className="text-sm font-medium text-gray-900">{pred.class}</div>
-                    </div>
-                    <div className="flex items-center space-x-8 text-sm">
-                      <div className="w-24">
-                        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-gray-900 transition-all duration-500"
-                            style={{ width: `${pred.confidence * 100}%` }}
-                          ></div>
+            {/* BOTTOM LEFT - All Predictions */}
+            {!unidentifiedMessage && (
+              <div className="border-t border-gray-200 pt-8 space-y-6">
+                <h3 className="text-sm text-gray-600 mb-4">All Predictions</h3>
+
+                {result && result.all_predictions ? (
+                  <div className="space-y-4">
+                    {result.all_predictions.slice(0, 10).map((pred, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between py-4 border-b border-dotted border-gray-200 last:border-0"
+                      >
+                        <div className="flex-1">
+                          <div className="text-sm font-medium text-gray-900">{pred.class}</div>
+                        </div>
+                        <div className="flex items-center space-x-8 text-sm">
+                          <div className="w-24">
+                            <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-gray-900 transition-all duration-500"
+                                style={{ width: `${pred.confidence * 100}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                          <div className="font-bold text-gray-900 w-12 text-right">
+                            {(pred.confidence * 10).toFixed(2)}
+                          </div>
                         </div>
                       </div>
-                      <div className="font-bold text-gray-900 w-12 text-right">
-                        {(pred.confidence * 10).toFixed(2)}
-                      </div>
-                    </div>
+                    ))}
                   </div>
-                ))}
+                ) : (
+                  <div className="text-center py-12 text-gray-600">
+                    <p className="text-sm">No predictions available</p>
+                  </div>
+                )}
               </div>
-            ) : (
-              <div className="text-center py-12 text-gray-600">
-                <p className="text-sm">No predictions available</p>
+            )}
+
+            {/* BOTTOM RIGHT - Disease Information */}
+            {!unidentifiedMessage && (
+              <div className="border-t border-gray-200 pt-8 space-y-6">
+                <h3 className="text-sm text-gray-600 mb-4">Disease Information</h3>
+
+                {currentDiseaseInfo ? (
+                  <>
+                    <div>
+                      <h2 className="text-xl font-bold text-gray-900 mb-2">{currentDiseaseInfo.name}</h2>
+                      <p className="text-sm text-gray-600 italic mb-3">{currentDiseaseInfo.scientificName}</p>
+                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${currentDiseaseInfo.type === 'Healthy' ? 'bg-green-100 text-green-800' :
+                        currentDiseaseInfo.type === 'Fungal' ? 'bg-orange-100 text-orange-800' :
+                          currentDiseaseInfo.type === 'Bacterial' ? 'bg-red-100 text-red-800' :
+                            currentDiseaseInfo.type === 'Viral' ? 'bg-purple-100 text-purple-800' :
+                              'bg-yellow-100 text-yellow-800'
+                        }`}>
+                        {currentDiseaseInfo.type}
+                      </span>
+                    </div>
+
+                    {/* Symptoms */}
+                    <div>
+                      <h5 className="text-sm font-semibold text-gray-900 mb-3">Symptoms</h5>
+                      <ul className="text-sm text-gray-600 space-y-2">
+                        {currentDiseaseInfo.symptoms.map((symptom, index) => (
+                          <li key={index} className="flex items-start">
+                            <span className="mr-2 text-gray-600">•</span>
+                            <span>{symptom}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Visual Cues */}
+                    <div>
+                      <h5 className="text-sm font-semibold text-gray-900 mb-3">Visual Cues</h5>
+                      <ul className="text-sm text-gray-600 space-y-2">
+                        {currentDiseaseInfo.visualCues.map((cue, index) => (
+                          <li key={index} className="flex items-start">
+                            <span className="mr-2 text-gray-600">•</span>
+                            <span>{cue}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Treatment */}
+                    <div>
+                      <h5 className="text-sm font-semibold text-gray-900 mb-3">Treatment</h5>
+                      <ul className="text-sm text-gray-600 space-y-2">
+                        {currentDiseaseInfo.treatment.map((treatment, index) => (
+                          <li key={index} className="flex items-start">
+                            <span className="mr-2 text-gray-600">•</span>
+                            <span>{treatment}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Prevention */}
+                    <div>
+                      <h5 className="text-sm font-semibold text-gray-900 mb-3">Prevention</h5>
+                      <ul className="text-sm text-gray-600 space-y-2">
+                        {currentDiseaseInfo.prevention.map((prevention, index) => (
+                          <li key={index} className="flex items-start">
+                            <span className="mr-2 text-gray-600">•</span>
+                            <span>{prevention}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Impact */}
+                    <div className="bg-gray-50 rounded-lg p-6">
+                      <h5 className="text-sm font-semibold text-gray-900 mb-2">Impact</h5>
+                      <p className="text-sm text-gray-600 leading-relaxed">{currentDiseaseInfo.impact}</p>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center py-12 text-gray-600">
+                    <p className="text-sm">No disease information available</p>
+                  </div>
+                )}
               </div>
             )}
           </div>
-          )}
-
-          {/* BOTTOM RIGHT - Disease Information */}
-          {!unidentifiedMessage && (
-          <div className="border-t border-gray-200 pt-8 space-y-6">
-              <h3 className="text-sm text-gray-600 mb-4">Disease Information</h3>
-              
-              {currentDiseaseInfo ? (
-                <>
-                  <div>
-                    <h2 className="text-xl font-bold text-gray-900 mb-2">{currentDiseaseInfo.name}</h2>
-                    <p className="text-sm text-gray-600 italic mb-3">{currentDiseaseInfo.scientificName}</p>
-                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                      currentDiseaseInfo.type === 'Healthy' ? 'bg-green-100 text-green-800' :
-                      currentDiseaseInfo.type === 'Fungal' ? 'bg-orange-100 text-orange-800' :
-                      currentDiseaseInfo.type === 'Bacterial' ? 'bg-red-100 text-red-800' :
-                      currentDiseaseInfo.type === 'Viral' ? 'bg-purple-100 text-purple-800' :
-                      'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {currentDiseaseInfo.type}
-                    </span>
-                  </div>
-
-                  {/* Symptoms */}
-                  <div>
-                    <h5 className="text-sm font-semibold text-gray-900 mb-3">Symptoms</h5>
-                    <ul className="text-sm text-gray-600 space-y-2">
-                      {currentDiseaseInfo.symptoms.map((symptom, index) => (
-                        <li key={index} className="flex items-start">
-                          <span className="mr-2 text-gray-600">•</span>
-                          <span>{symptom}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* Visual Cues */}
-                  <div>
-                    <h5 className="text-sm font-semibold text-gray-900 mb-3">Visual Cues</h5>
-                    <ul className="text-sm text-gray-600 space-y-2">
-                      {currentDiseaseInfo.visualCues.map((cue, index) => (
-                        <li key={index} className="flex items-start">
-                          <span className="mr-2 text-gray-600">•</span>
-                          <span>{cue}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* Treatment */}
-                  <div>
-                    <h5 className="text-sm font-semibold text-gray-900 mb-3">Treatment</h5>
-                    <ul className="text-sm text-gray-600 space-y-2">
-                      {currentDiseaseInfo.treatment.map((treatment, index) => (
-                        <li key={index} className="flex items-start">
-                          <span className="mr-2 text-gray-600">•</span>
-                          <span>{treatment}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* Prevention */}
-                  <div>
-                    <h5 className="text-sm font-semibold text-gray-900 mb-3">Prevention</h5>
-                    <ul className="text-sm text-gray-600 space-y-2">
-                      {currentDiseaseInfo.prevention.map((prevention, index) => (
-                        <li key={index} className="flex items-start">
-                          <span className="mr-2 text-gray-600">•</span>
-                          <span>{prevention}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* Impact */}
-                  <div className="bg-gray-50 rounded-lg p-6">
-                    <h5 className="text-sm font-semibold text-gray-900 mb-2">Impact</h5>
-                    <p className="text-sm text-gray-600 leading-relaxed">{currentDiseaseInfo.impact}</p>
-                  </div>
-                </>
-              ) : (
-                <div className="text-center py-12 text-gray-600">
-                  <p className="text-sm">No disease information available</p>
-                </div>
-              )}
-          </div>
-          )}
-        </div>
         </AnimatedSection>
       </main>
 
