@@ -1,0 +1,63 @@
+================================================================================
+FITO - TOMATO LEAF DISEASE IDENTIFICATION SYSTEM
+DISEASE CLASSIFICATION PERFORMANCE (10 CLASSES ONLY)
+EXCLUDING UNIDENTIFIED CLASS
+================================================================================
+
+Overall Accuracy: 88.31%
+Total Test Images: 4585
+Number of Classes: 10 (10 diseases + healthy)
+Evaluation Date: 2025-12-07T23:34:18.089071
+
+--------------------------------------------------------------------------------
+CLASS-WISE PERFORMANCE
+--------------------------------------------------------------------------------
+
+Class                          Images     Acc        Prec       Rec        F1        
+--------------------------------------------------------------------------------
+Mosaic Virus                   448        98.44      92.45      98.44      95.35     
+Leaf Mold                      470        95.53      88.74      95.53      92.01     
+Bacterial Spot                 425        95.06      87.83      95.06      91.30     
+Yellow Leaf Curl Virus         490        93.88      98.92      93.88      96.34     
+Late Blight                    463        87.69      89.04      87.69      88.36     
+Spider Mites                   435        86.21      80.82      86.21      83.43     
+Target Spot                    457        84.46      75.39      84.46      79.67     
+Septoria Leaf Spot             436        82.80      86.16      82.80      84.44     
+Early Blight                   480        81.25      87.25      81.25      84.14     
+Healthy                        481        78.38      98.69      78.38      87.37     
+
+--------------------------------------------------------------------------------
+AVERAGE METRICS
+--------------------------------------------------------------------------------
+
+Average Precision: 88.53%
+Average Recall: 88.37%
+Average F1-Score: 88.24%
+
+--------------------------------------------------------------------------------
+PERFORMANCE CATEGORIES
+--------------------------------------------------------------------------------
+
+Excellent (>=95%): 3 classes
+  - Bacterial Spot: 95.06%
+  - Leaf Mold: 95.53%
+  - Mosaic Virus: 98.44%
+
+Good (85-95%): 3 classes
+  - Late Blight: 87.69%
+  - Spider Mites: 86.21%
+  - Yellow Leaf Curl Virus: 93.88%
+
+Fair (80-85%): 3 classes
+  - Early Blight: 81.25%
+  - Septoria Leaf Spot: 82.80%
+  - Target Spot: 84.46%
+
+Needs Improvement (<80%): 1 classes
+  - Healthy: 78.38%
+
+================================================================================
+NOTE: This analysis excludes the Unidentified class
+For complete system performance including Unidentified class,
+see performance_summary.txt (Overall Accuracy: 90.17%)
+================================================================================
