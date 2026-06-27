@@ -9,8 +9,9 @@ develop-eggs/
 dist/
 downloads/
 eggs/
-.eggs/
-lib/
+.eggs
+# Only ignore Python lib directories, not frontend lib
+lib/__pycache__/
 lib64/
 parts/
 sdist/
